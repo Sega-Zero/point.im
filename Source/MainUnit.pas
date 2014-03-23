@@ -3,11 +3,11 @@ unit MainUnit;
 interface
 
 uses
-  u_plugin_info, u_plugin_msg, u_common, u_BasePlugin, Classes;
+  u_plugin_info, u_plugin_msg, u_common, u_BasePlugin, Classes, Windows;
 
 const
   PLUGIN_VER_MAJOR = 1;
-  PLUGIN_VER_MINOR = 0;
+  PLUGIN_VER_MINOR = 1;
   PLUGIN_NAME      : WideString = 'Point.im support';
   PLUGIN_AUTHOR    : WideString = '@hohoho';
   PLUGIN_DESC      : WideString = 'Ya dawg, i heard you like point.im...';
@@ -15,6 +15,7 @@ const
 type
   TQipPlugin = class(TBaseQipPlugin)
   private
+    FPlugIco: HICON;
     procedure TransformMessage(const AMessage: TQipMsgPlugin; var ChangeMessageText: WideString);
   public
     procedure GetPluginInformation(var VersionMajor: Word; var VersionMinor: Word;
@@ -36,12 +37,16 @@ type
       override;
     function InnerHasHistory: Boolean; override;
     function InnerHistFile(NodeID: WideString): WideString; override;
+    // Super icon (thx for @arts)
+    function PluginIcon: HICON; override;
+    constructor Create(const PluginService: IQIPPluginService);
+    destructor Destroy; override;
   end;
 
 implementation
 
 uses
-  RegExpr, Windows, SysUtils;
+  RegExpr, SysUtils;
 
 {$I widecode.inc}
 
@@ -251,6 +256,25 @@ begin
     Result := 'p@point.im'
   else
     Result := '';
+end;
+
+// Super icon (thx for @arts)
+constructor TQipPlugin.Create(const PluginService: IQIPPluginService);
+begin
+  inherited;
+  FPlugIco := LoadImageW(HInstance, 'PLUGINICON', IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+end;
+
+destructor TQipPlugin.Destroy;
+begin
+  DeleteObject(FPlugIco);
+  FPlugIco := 0;
+  inherited;
+end;
+
+function TQipPlugin.PluginIcon: HICON;
+begin
+  Result := FPlugIco;
 end;
 
 end.
