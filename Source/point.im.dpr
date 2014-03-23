@@ -7,7 +7,7 @@ library point.im;
   u_plugin_info,
   MainUnit in 'MainUnit.pas';
 
-{$R *.res}
+{$R icon.res}
 
 {***********************************************************}
 function CreateInfiumPLUGIN(PluginService: IQIPPluginService): IQIPPlugin; stdcall;
