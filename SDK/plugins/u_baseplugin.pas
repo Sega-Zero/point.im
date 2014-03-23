@@ -14,7 +14,20 @@ interface
 {$I sdk_defines.inc}
 
 uses
-  Windows, Messages, Consts, SysUtils, {$IFNDEF NOGRAPHICS}Graphics, {$ENDIF} Classes,
+  Windows, Messages,
+  {$IF CompilerVersion <= 18.0}
+  Consts,
+  {$ELSE}
+  Vcl.Consts,
+  {$IFEND}
+  SysUtils,
+  {$IFNDEF NOGRAPHICS}
+    {$IF CompilerVersion <= 18.0}
+    Graphics,
+    {$ELSE}
+    Vcl.Graphics,
+    {$IFEND}
+  {$ENDIF} Classes,
   u_plugin_info, u_plugin_msg, u_common, {$IFDEF USEPOPUPEX}u_PopupEx, {$ENDIF}
   u_gui_const, u_gui_intf, u_public_intf, u_gui_graphics, u_gui_events, u_gui_helpers;
 
@@ -479,7 +492,7 @@ type
     property MainStatus: Integer read FStatus;
     property MainPrivacyLevel: Integer read FPrivacy;
     property CoreHistory: IQIPHistory read FHist;
-    property MyHandle: THandle read FPluginInfo.DllHandle;
+    property MyHandle: Cardinal read FPluginInfo.DllHandle;
     property CurrentCLFilter: WideString read FFilter;
     property FadeInfos: TFadeList read FFades;
     property AntiBossed: Boolean read FABossed;
@@ -2229,12 +2242,12 @@ function UpperDir(const Path: WideString): WideString;
 var
   I: Integer;
 begin
-  Result := {$IF CompilerVersion <= 18.0}WideExcludeTrailingBackslash{$ELSE}ExcludeTrailingBackslash{$IFEND}(Path);
+  Result := {$IF CompilerVersion <= 18.0}WideExcludeTrailingBackslash{$ELSE}ExcludeTrailingPathDelimiter{$IFEND}(Path);
   I := {$IF CompilerVersion <= 18.0}WideLastDelimiter{$ELSE}LastDelimiter{$IFEND}('\:', Result);
   if I > 0 then
     Result := Copy(Result, 1, I);
 
-  Result := {$IF CompilerVersion <= 18.0}WideIncludeTrailingBackslash{$ELSE}IncludeTrailingBackslash{$IFEND}(Result);
+  Result := {$IF CompilerVersion <= 18.0}WideIncludeTrailingBackslash{$ELSE}IncludeTrailingPathDelimiter{$IFEND}(Result);
 end;
 
 function TCustomBaseQipPlugin.GetQIPProfileDirectory: WideString;
@@ -3984,7 +3997,11 @@ begin
     Result := buf;
 
   if Result <> '' then
+  {$IF CompilerVersion <= 18.0}
     Result := WideExtractFilePath(Result);
+  {$ELSE}
+    Result := ExtractFilePath(Result);
+  {$IFEND}
 end;
 
 { TMainThreadSyncWnd }

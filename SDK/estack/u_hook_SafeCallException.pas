@@ -64,7 +64,7 @@ end;
 
 procedure HookProc(Proc, Dest: Pointer; var BackupCode: TXRedirCode);
 var
-  n: DWORD;
+  n: {$IF CompilerVersion <= 18.0}DWORD{$ELSE}NativeUInt{$IFEND};
   Code: TXRedirCode;
 begin
   Proc := GetActualAddr(Proc);
@@ -79,7 +79,7 @@ end;
 
 procedure UnhookProc(Proc: Pointer; var BackupCode: TXRedirCode);
 var
-  n: Cardinal;
+  n: {$IF CompilerVersion <= 18.0}DWORD{$ELSE}NativeUInt{$IFEND};
 begin
   if (BackupCode.Jump <> 0) and (Proc <> nil) then
   begin

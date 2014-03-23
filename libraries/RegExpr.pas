@@ -49,6 +49,7 @@ interface
 {$IFDEF VER130} {$DEFINE D5} {$DEFINE D4} {$DEFINE D3} {$DEFINE D2} {$ENDIF} // D5
 {$IFDEF VER140} {$DEFINE D6} {$DEFINE D5} {$DEFINE D4} {$DEFINE D3} {$DEFINE D2} {$ENDIF} // D6
 {$IFDEF VER150} {$DEFINE D7} {$DEFINE D6} {$DEFINE D5} {$DEFINE D4} {$DEFINE D3} {$DEFINE D2} {$ENDIF} // D7
+{$IFDEF VER230} {$DEFINE D7} {$DEFINE D6} {$DEFINE D5} {$DEFINE D4} {$DEFINE D3} {$DEFINE D2} {$ENDIF} // XE2
 
 // ======== Define base compiler options
 {$BOOLEVAL OFF}
@@ -105,9 +106,9 @@ type
  RegExprString = WideString;
  REChar = WideChar;
  {$ELSE}
- PRegExprChar = PChar;
+ PRegExprChar = PAnsiChar;
  RegExprString = AnsiString; //###0.952 was string
- REChar = Char;
+ REChar = AnsiChar;
  {$ENDIF}
  TREOp = REChar; // internal p-code type //###0.933
  PREOp = ^TREOp;
@@ -2295,10 +2296,13 @@ function TRegExpr.ParseAtom (var flagp : integer) : PRegExprChar;
              if RangeEnd = EscChar then begin
                {$IFDEF UniCode} //###0.935
                if (ord ((regparse + 1)^) < 256)
-                  and (char ((regparse + 1)^)
-                        in ['d', 'D', 's', 'S', 'w', 'W']) then begin
+                 {$IF CompilerVersion <= 18.0}
+                  and (char ((regparse + 1)^) in ['d', 'D', 's', 'S', 'w', 'W']) then begin
+                 {$ELSE}
+                  and CharInSet(char ((regparse + 1)^), ['d', 'D', 's', 'S', 'w', 'W']) then begin
+                  {$IFEND}
                {$ELSE}
-               if (regparse + 1)^ in ['d', 'D', 's', 'S', 'w', 'W'] then begin
+               if CharInSet((regparse + 1)^, ['d', 'D', 's', 'S', 'w', 'W']) then begin
                {$ENDIF}
                  EmitRangeC ('-'); // or treat as error ?!!
                  CONTINUE;
@@ -3678,7 +3682,12 @@ function TRegExpr.Substitute (const ATemplate : RegExprString) : RegExprString;
     else
      while (p < TemplateEnd) and
       {$IFDEF UniCode} //###0.935
-      (ord (p^) < 256) and (char (p^) in Digits)
+      (ord (p^) < 256)
+      {$IF CompilerVersion <= 18.0}
+                  and (char (p^) in Digits)
+                 {$ELSE}
+                  and CharInSet(char (p^), Digits)
+                  {$IFEND}
       {$ELSE}
       (p^ in Digits)
       {$ENDIF}
