@@ -90,7 +90,7 @@ MaxStackSize=1048576
 ImageBase=4194304
 ExeDescription=
 [Directories]
-OutputDir=..\bin\point.im\
+OutputDir=..\dlls\point\
 UnitOutputDir=dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
@@ -137,5 +137,7 @@ Item0=$(DELPHI)\Lib\Debug;F:\_WORK_~1\_COMPO~1\LIBRAR~1\JEDI\jcl\lib\d7\debug
 Count=1
 Item0=dcu
 [HistoryLists\hlOutputDirectorry]
-Count=1
-Item0=..\bin\point.im\
+Count=3
+Item0=..\dlls\point\
+Item1=..\dlls\point.im\
+Item2=..\bin\point.im\
