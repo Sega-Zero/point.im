@@ -220,17 +220,24 @@ function TQipPlugin.InnerNodeIDFromAccName(AccountName: WideString;
 begin
   Result := '';
   if MetaHasNode then Exit;
-  if WideFileExists(HistorySavePath + 'p@point.im.phf') then
-    Result := AccountName + IntToStr(ProtoHandle);
+  if (AccountName = 'p@point.im') and WideFileExists(HistorySavePath + 'p@point.im.phf') then
+    Result := 'p@point.im';
 end;
 
 function TQipPlugin.InnerNodeIDFromMeta(AMeta: IMetaContact): WideString;
+var
+  i: Integer;
 begin
   if AMeta = nil then Exit;
 
   Result := '';
   if WideFileExists(HistorySavePath + 'p@point.im.phf') then
-    Result := IntToStr(AMeta.UniqueID);
+  for i := 0 to AMeta.Count - 1 do
+    if AMeta.Contact(i).AccountName = 'p@point.im' then
+    begin
+      Result := 'p@point.im';
+      Exit;
+    end;
 end;
 
 function TQipPlugin.InnerHasHistory: Boolean;
@@ -240,7 +247,10 @@ end;
 
 function TQipPlugin.InnerHistFile(NodeID: WideString): WideString;
 begin
-  Result := 'p@point.im';
+  if NodeID = 'p@point.im' then
+    Result := 'p@point.im'
+  else
+    Result := '';
 end;
 
 end.
