@@ -94,7 +94,7 @@ OutputDir=..\dlls\point\
 UnitOutputDir=dcu
 PackageDLLOutputDir=
 PackageDCPOutputDir=
-SearchPath=$(DELPHI)\Lib\Debug;..\SDK\common;..\SDK\estack;..\SDK\plugins;..\SDK\gui
+SearchPath=$(DELPHI)\Lib\Debug;..\libraries\Delphi7_fix;..\SDK\common;..\SDK\estack;..\SDK\plugins;..\SDK\gui;..\libraries
 Packages=rtl;vcl;vclx;indy;inet;xmlrtl;vclie;inetdbbde;inetdbxpress;dbrtl;dsnap;dsnapcon;vcldb;soaprtl;VclSmp;dbexpress;dbxcds;inetdb;bdertl;vcldbx;webdsnap;websnap;adortl;ibxpress;teeui;teedb;tee;dss;visualclx;visualdbclx;vclactnband;vclshlctrls;IntrawebDB_50_70;Intraweb_50_70;Rave50CLX;Rave50VCL;dclOfficeXP;EasyListviewD7;EasyNSED7;Jcl;PngComponentsD7;VirtualTreesD7;madExcept_;TMSUnicodeD7;gifimag;PNG_D7;PageControl;CoolTrayIcon_D6plus;OverbyteIcsD7Run;nccontrols;DynImages
 Conditionals=
 DebugSourceDirs=
@@ -131,9 +131,10 @@ D:\Delphi\Projects\Bpl\EmbeddedWebBrowser_D7.bpl=Internet Embedded Web Browser C
 Count=1
 Item0=WinTypes=Windows;WinProcs=Windows;DbiTypes=BDE;DbiProcs=BDE;DbiErrs=BDE;
 [HistoryLists\hlSearchPath]
-Count=2
-Item0=$(DELPHI)\Lib\Debug;..\SDK\common;..\SDK\estack;..\SDK\plugins;..\SDK\gui
-Item1=$(DELPHI)\Lib\Debug;F:\_WORK_~1\_COMPO~1\LIBRAR~1\JEDI\jcl\lib\d7\debug
+Count=3
+Item0=$(DELPHI)\Lib\Debug;..\libraries\Delphi7_fix;..\SDK\common;..\SDK\estack;..\SDK\plugins;..\SDK\gui;..\libraries
+Item1=$(DELPHI)\Lib\Debug;..\SDK\common;..\SDK\estack;..\SDK\plugins;..\SDK\gui
+Item2=$(DELPHI)\Lib\Debug;F:\_WORK_~1\_COMPO~1\LIBRAR~1\JEDI\jcl\lib\d7\debug
 [HistoryLists\hlUnitOutputDirectory]
 Count=1
 Item0=dcu
