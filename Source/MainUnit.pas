@@ -94,7 +94,8 @@ var
   I: Integer;
   firstLine, user, tags: WideString;
 begin
-  ChangeMessageText := TrimLeft(AMessage.MsgText);
+  firstLine := AMessage.MsgText;
+  ChangeMessageText := TrimLeft(firstLine);
 
   if (Pos(WideString('ќффлайн сообщение'), ChangeMessageText) = 1) or
      (Pos(WideString('Offline message'), ChangeMessageText) = 1) then
