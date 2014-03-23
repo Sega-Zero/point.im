@@ -101,7 +101,12 @@ end;
 procedure RaiseForDelphiExceptionCode(dwExceptionCode, dwExceptionFlags, nNumberOfArguments: DWORD; lpArguments: PDWORD); stdcall;
 begin
   cDelphiException := dwExceptionCode;
-  RaiseException(dwExceptionCode, dwExceptionFlags, nNumberOfArguments, lpArguments);
+  RaiseException(dwExceptionCode, dwExceptionFlags, nNumberOfArguments,
+                 {$IF CompilerVersion <= 18.0}
+                 lpArguments
+                 {$ELSE}
+                 PUINT_PTR(lpArguments)
+                 {$IFEND});
 end;
 
 {$O-} //выключаем оптимизацию, дабы после нашего супер raise-а компилятор не заоптимизировал хвост функции

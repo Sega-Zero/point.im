@@ -96,17 +96,17 @@ var
 begin
   ChangeMessageText := TrimLeft(AMessage.MsgText);
 
-  if (Pos('ќффлайн сообщение', ChangeMessageText) = 1) or
-     (Pos('Offline message', ChangeMessageText) = 1) then
+  if (Pos(WideString('ќффлайн сообщение'), ChangeMessageText) = 1) or
+     (Pos(WideString('Offline message'), ChangeMessageText) = 1) then
   begin
-    I := Pos(#13#10, ChangeMessageText);
+    I := Pos(WideString(#13#10), ChangeMessageText);
     if I > 0 then
       Delete(ChangeMessageText, 1, I + 1);
 
     ChangeMessageText := TrimLeft(ChangeMessageText);
   end;
 
-  firstLine := Copy(ChangeMessageText, 1, Pos(#13#10, ChangeMessageText) - 1);
+  firstLine := Copy(ChangeMessageText, 1, Pos(WideString(#13#10), ChangeMessageText) - 1);
   Delete(ChangeMessageText, 1,Length(firstLine));
   ChangeMessageText := TrimLeft(ChangeMessageText);
 
