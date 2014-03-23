@@ -9,3 +9,5 @@ __history
 *.dll
 *.~pas
 *.~dpr
+*.dsk
+*.~dsk
