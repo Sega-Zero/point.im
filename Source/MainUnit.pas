@@ -87,7 +87,7 @@ const
 procedure TQipPlugin.TransformMessage(const AMessage: TQipMsgPlugin; var ChangeMessageText: WideString);
 var
   I: Integer;
-  firstLine, user, tags, replacePattern: WideString;
+  firstLine, user, tags: WideString;
 begin
   ChangeMessageText := TrimLeft(AMessage.MsgText);
 
@@ -118,11 +118,6 @@ begin
   //если это новый пост юзера и там есть теги - подсвечиваем их там с учётом пробелов
   if ExecRegExpr('(?igr)\*[^\*\r\n]+', firstLine) then
   begin
-    if user <> '' then
-      replacePattern := '[url="http://' + user + '.point.im?tag=$1"]$0[img]skin://graph,228[/img][/url]'
-    else
-      replacePattern := '[url="http://point.im?tag=$1"]$0[img]skin://graph,228[/img][/url]';
-
     with TRegExpr.Create do
     try
       Expression := '(?igr)\*([^\*\r\n]+)';
