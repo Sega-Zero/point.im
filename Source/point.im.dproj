@@ -3,7 +3,7 @@
 			<ProjectGuid>{A6079571-3F09-493E-83DE-61A0BC6A8720}</ProjectGuid>
 			<MainSource>point.im.dpr</MainSource>
 			<Base>True</Base>
-			<Config Condition="'$(Config)'==''">Debug</Config>
+			<Config Condition="'$(Config)'==''">Release</Config>
 			<TargetedPlatforms>1</TargetedPlatforms>
 			<AppType>Library</AppType>
 			<FrameworkType>None</FrameworkType>
