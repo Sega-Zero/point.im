@@ -138,14 +138,17 @@ begin
     end;
   end;
 
+  if user = '' then
+     ChangeMessageText := Trim(firstLine + #13#10 + ChangeMessageText);
+
   //юзеры в тексте с микроаватарками
   ChangeMessageText := ReplaceRegExpr('(?igr)(@([\w\-@\.]+):?)', ChangeMessageText,
                                       '[img width=16 height=16 alt="$2 avatar"]http://point.im/avatar/$2/80[/img]' +
                                       '[url="http://$2.point.im"]$2[img]skin://graph,228[/img][/url]', True);
 
   //преобразовываем все посты в кликабле
-  ChangeMessageText := ReplaceRegExpr('(?igr)((\s)#([\d\w\/]+) ?(http\:\/\/point.im\/([\d\w#]+))?)', ChangeMessageText,
-                                      WideFormat('[url="plugin:%d"]$2#$3[/url][url="http://point.im/$3"][img]skin://graph,228[/img][/url]', [MyHandle]), True);
+  ChangeMessageText := ReplaceRegExpr('(?igr)((\s|Comment |Post |Private post |Комментарий |Пост |Приватный пост )#([\d\w\/]+) ?(is added.\r\n|is sent.\r\n|отправлен.\r\n|добавлен.\r\n|)?(http\:\/\/point.im\/([\d\w#]+))?)', ChangeMessageText,
+                                      WideFormat('$2[url="plugin:%d"]#$3[/url][url="http://point.im/$3"][img]skin://graph,228[/img][/url] $4', [MyHandle]), True);
   //фиксим урлы на комменты, ибо там не / а #
   ChangeMessageText := ReplaceRegExpr('(?igr)\[url=\"http\:\/\/point.im\/([\d\w#]+)/(\d+)', ChangeMessageText,
                                       '[url="http://point.im/$1#$2', True);
@@ -165,8 +168,6 @@ begin
       tags := WideFormat(TagsTemplate, [tags]);
     ChangeMessageText := WideFormat(PostTemplate, [user, ChangeMessageText, MyHandle, tags]);
   end
-  else
-    ChangeMessageText := firstLine + #13#10 + ChangeMessageText;
 end;
 
 function TQipPlugin.MessageReceived(const AMessage: TQipMsgPlugin;
