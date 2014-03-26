@@ -3650,7 +3650,7 @@ begin
     Message.Result := 1;
     {$IFDEF LOGDEBUGINFO}
     LogFmt('new bb-code hint: %s', [hd^.Hint]);
-    with ShowR do
+    with hd.ShowRect do
       LogFmt('new hint bounds: %d,%d %dx%d',
              [Left, Top, Right-Left, Bottom-Top]);
     {$ENDIF}
