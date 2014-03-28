@@ -137,6 +137,11 @@ begin
     finally
       Free;
     end;
+  end
+  // If no tags found in the first line
+  else
+  begin
+    ChangeMessageText := firstLine + #13#10 + ChangeMessageText;
   end;
 
   //юзеры в тексте с микроаватарками
