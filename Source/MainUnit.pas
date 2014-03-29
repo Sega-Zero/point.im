@@ -16,6 +16,7 @@ type
   TQipPlugin = class(TBaseQipPlugin)
   private
     FPlugIco: HICON;
+    FSelectedURL: WideString;
     procedure TransformMessage(const AMessage: TQipMsgPlugin; var ChangeMessageText: WideString);
   public
     procedure GetPluginInformation(var VersionMajor: Word; var VersionMinor: Word;
@@ -39,8 +40,16 @@ type
     function InnerHistFile(NodeID: WideString): WideString; override;
     // Super icon (thx for @arts)
     function PluginIcon: HICON; override;
+
     constructor Create(const PluginService: IQIPPluginService);
     destructor Destroy; override;
+
+    procedure AddMenuItems(const SelectedStr: WideString;
+      const SelectedURL: WideString; AddingToPicture: Boolean;
+      var Items: TMenuItemsArray); override;
+    procedure MenuItemClicked(const SelectedStr: WideString;
+      const ItemID: Integer; const ItemData: Integer;
+      const PictureID: Integer = 0); override;
   end;
 
 implementation
@@ -68,13 +77,13 @@ const
   PostTemplate = '[table border=0 cellspacing=0 cellpadding=0]' +
                    '[tr]' +
                      '[td border=0 padding=0 width=34 padding-left=3]' +
-                       '[img alt="%0:s avatar" width=32 height=32]http://point.im/avatar/%0:s/80[/img]' +
+                       '[img alt="@%0:s avatar" width=32 height=32]http://point.im/avatar/%0:s/80[/img]' +
                      '[/td]' +
                      '[td border=0 padding=0 padding-right=5 padding-left=5]' +
                        '[table border=0 cellspacing=0 padding-left=5]' +
                        '[tr padding=0]' +
                          '[td]' +
-                         '[color=$00649D][url="plugin:%2:d" alt="PM @%0:s"][b]%0:s[/b][img alt="PM @%0:s"]skin://jabber_pics,816,#14[/img][/url][/color]' +
+                         '[color=$00649D][url="plugin:%2:d" alt="PM @%0:s"][b]@%0:s[/b][img alt="PM @%0:s"]skin://jabber_pics,816,#14[/img][/url][/color]' +
                          '[/td]' +
                        '[/tr]' +
                        '%3:s' +
@@ -144,14 +153,17 @@ begin
   //  ChangeMessageText := firstLine + #13#10 + ChangeMessageText;
   //end;
 
+  if user = '' then
+     ChangeMessageText := Trim(firstLine + #13#10 + ChangeMessageText);
+
   //юзеры в тексте с микроаватарками
   ChangeMessageText := ReplaceRegExpr('(?igr)(@([\w\-@\.]+):?)', ChangeMessageText,
-                                      '[img width=16 height=16 alt="$2 avatar"]http://point.im/avatar/$2/80[/img]' +
-                                      '[url="http://$2.point.im"]$2[img]skin://graph,228[/img][/url]', True);
+                                      '[img width=16 height=16 alt="@$2 avatar"]http://point.im/avatar/$2/80[/img]' +
+                                      '[url="http://$2.point.im"]@$2[img]skin://graph,228[/img][/url]', True);
 
   //преобразовываем все посты в кликабле
-  ChangeMessageText := ReplaceRegExpr('(?igr)((\s)#([\d\w\/]+) ?(http\:\/\/point.im\/([\d\w#]+))?)', ChangeMessageText,
-                                      WideFormat('[url="plugin:%d"]$2#$3[/url][url="http://point.im/$3"][img]skin://graph,228[/img][/url]', [MyHandle]), True);
+  ChangeMessageText := ReplaceRegExpr('(?igr)((\s|Comment |Post |Private post |Комментарий |Пост |Приватный пост )#([\d\w\/]+) ?(is added.\r\n|is sent.\r\n|отправлен.\r\n|добавлен.\r\n|)?(http\:\/\/point.im\/([\d\w#]+))?)', ChangeMessageText,
+                                      WideFormat('$2[url="plugin:%d"]#$3[/url][url="http://point.im/$3"][img]skin://graph,228[/img][/url] $4', [MyHandle]), True);
   //фиксим урлы на комменты, ибо там не / а #
   ChangeMessageText := ReplaceRegExpr('(?igr)\[url=\"http\:\/\/point.im\/([\d\w#]+)/(\d+)', ChangeMessageText,
                                       '[url="http://point.im/$1#$2', True);
@@ -177,8 +189,6 @@ begin
       tags := WideFormat(TagsTemplate, [tags]);
     ChangeMessageText := WideFormat(PostTemplate, [user, ChangeMessageText, MyHandle, tags]);
   end
-  else
-    ChangeMessageText := firstLine + #13#10 + ChangeMessageText;
 end;
 
 function TQipPlugin.MessageReceived(const AMessage: TQipMsgPlugin;
@@ -287,6 +297,76 @@ end;
 function TQipPlugin.PluginIcon: HICON;
 begin
   Result := FPlugIco;
+end;
+
+procedure TQipPlugin.AddMenuItems(const SelectedStr,
+  SelectedURL: WideString; AddingToPicture: Boolean;
+  var Items: TMenuItemsArray);
+var
+  AccountName: WideString;
+  Proto, SubCount: Integer;
+begin
+  inherited;
+  GetActiveTab(AccountName, Proto, SubCount);
+  if not AddingToPicture and (AccountName = 'p@point.im') then
+  begin
+    FSelectedURL := SelectedURL;
+
+    //user
+    if ExecRegExpr('(?igr)(@([\w\-@\.]+):?)', SelectedURL) then
+    begin
+      SetLength(Items, 1);
+      Items[0].ItemID := 0;
+      Items[0].ItemData := Proto;
+      Items[0].MenuCaption := 'PM';
+      Items[0].MenuIcon := PluginIcon;
+      Items[0].Enabled := True;
+    end;
+
+    //thread
+    if ExecRegExpr('(?igr)#([\d\w\/]+)', SelectedURL) then
+    begin
+      SetLength(Items, 1);
+      Items[0].ItemID := 0;
+      Items[0].ItemData := Proto;
+      Items[0].MenuCaption := 'Recommend';
+      Items[0].MenuIcon := PluginIcon;
+      Items[0].Enabled := True;
+    end;
+  end;
+end;
+
+procedure TQipPlugin.MenuItemClicked(const SelectedStr: WideString;
+  const ItemID, ItemData, PictureID: Integer);
+var
+  AccountName, cmd: WideString;
+  Proto, SubCount: Integer;
+
+  FoundInfo: TPluginInfo;
+  Enabled: Boolean;
+begin
+  GetActiveTab(AccountName, Proto, SubCount);
+
+  //thread
+  if ExecRegExpr('(?igr)#([\d\w\/]+)', FSelectedURL) then
+  case ItemID of
+    0: SendIM(Proto, AccountName, '! ' + FSelectedURL);
+  end;
+
+  //user
+  if ExecRegExpr('(?igr)(@([\w\-@\.]+):?)', FSelectedURL) then
+  case ItemID of
+    0:
+    begin
+      FindPlugin('sdkhelper', FoundInfo, Enabled);
+      if Enabled and (FoundInfo.DllHandle <> 0) then
+      begin
+        cmd := 'PM ' + FSelectedURL;
+        SendMessageToPlugin(FoundInfo.DllHandle, 1, Integer(PWideChar(cmd)), 0);
+        OpenTab(AccountName, ProtoHandle);
+      end;
+    end;
+  end;
 end;
 
 end.
