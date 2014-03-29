@@ -352,7 +352,7 @@ begin
       begin
         cmd := 'PM ' + FSelectedURL;
         SendMessageToPlugin(FoundInfo.DllHandle, 1, Integer(PWideChar(cmd)), 0);
-        OpenTab(AccountName, ProtoHandle);
+        OpenTab(AccountName, FoundInfo.DllHandle);
       end;
     end;
   end;
