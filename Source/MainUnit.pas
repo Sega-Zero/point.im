@@ -7,7 +7,7 @@ uses
 
 const
   PLUGIN_VER_MAJOR = 1;
-  PLUGIN_VER_MINOR = 2;
+  PLUGIN_VER_MINOR = 3;
   PLUGIN_NAME      : WideString = 'Point.im support';
   PLUGIN_AUTHOR    : WideString = '@hohoho';
   PLUGIN_DESC      : WideString = 'Ya dawg, i heard you like point.im...';
@@ -95,7 +95,7 @@ const
                    '[/tr]' +
                  '[/table]';
   TagsTemplate = '[tr padding=0  backcolor=$CCE5FF]' +
-                 '[td]tags: %s[/td]' +
+                 '[td]%s[/td]' +
                  '[/tr]';
 
 procedure TQipPlugin.TransformMessage(const AMessage: TQipMsgPlugin; var ChangeMessageText: WideString);
@@ -147,6 +147,11 @@ begin
       Free;
     end;
   end;
+  // If no tags found in the first line
+  //else
+  //begin
+  //  ChangeMessageText := firstLine + #13#10 + ChangeMessageText;
+  //end;
 
   if user = '' then
      ChangeMessageText := Trim(firstLine + #13#10 + ChangeMessageText);
@@ -165,6 +170,12 @@ begin
 
   //преобразуем все теги в тексте
   ChangeMessageText := ReplaceRegExpr('(?igr)\*([^\*\s]+)', ChangeMessageText, '[url="http://point.im?tag=$1"]$0[img]skin://graph,228[/img][/url]', True);
+
+  // Replacing images
+  ChangeMessageText := ReplaceRegExpr('(?igr)(https?\:\/\/[\w\.-\/^\s]+?\.(jpg|png|gif))', ChangeMessageText, '[url=$0][img]$0[/img][/url]', True);
+
+  // Markdown links
+  ChangeMessageText := ReplaceRegExpr('(?igr)\[([^\]\[]*?)\]\((\w+?\:(\/\/)?[\w\.-\/^\s]+?)(\s\"(.*?)\")?\)', ChangeMessageText, '[url=$2]$1[/url]', True);
 
   //строку Recommended by трансформируем в картиночку
   ChangeMessageText := Tnt_WideStringReplace(ChangeMessageText, 'Recommended by', '[img alt="Recommended by"]skin://jabber_pics,838,#14[/img]', [rfReplaceAll]);
