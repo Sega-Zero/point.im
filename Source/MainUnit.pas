@@ -175,7 +175,7 @@ begin
   ChangeMessageText := ReplaceRegExpr('(?igr)(https?\:\/\/[\w\.-\/^\s]+?\.(jpg|png|gif))', ChangeMessageText, '[url=$0][img]$0[/img][/url]', True);
 
   // Markdown links
-  ChangeMessageText := ReplaceRegExpr('(?igr)\[([^\]\[]*?)\]\((\w+?\:(\/\/)?[\w\.-\/^\s]+?)(\s\"(.*?)\")?\)', ChangeMessageText, '[url=$2]$1[/url]', True);
+  ChangeMessageText := ReplaceRegExpr('(?igr)\[([^\]\[]*?)\]\((\w+?\:(\/\/)?[\w\.\-\/^\s]+?)(\s\"(.*?)\")?\)', ChangeMessageText, '[url=$2]$1[/url]', True);
 
   //строку Recommended by трансформируем в картиночку
   ChangeMessageText := Tnt_WideStringReplace(ChangeMessageText, 'Recommended by', '[img alt="Recommended by"]skin://jabber_pics,838,#14[/img]', [rfReplaceAll]);
