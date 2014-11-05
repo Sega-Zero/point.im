@@ -7,7 +7,7 @@ uses
 
 const
   PLUGIN_VER_MAJOR = 1;
-  PLUGIN_VER_MINOR = 3;
+  PLUGIN_VER_MINOR = 4;
   PLUGIN_NAME      : WideString = 'Point.im support';
   PLUGIN_AUTHOR    : WideString = '@hohoho';
   PLUGIN_DESC      : WideString = 'Ya dawg, i heard you like point.im...';
@@ -156,6 +156,12 @@ begin
   if user = '' then
      ChangeMessageText := Trim(firstLine + #13#10 + ChangeMessageText);
 
+  //строку "@user recommended your post #post" трансформируем в строку с картиночкой
+  // TODO: Сделать обработку через хендлер кликабельных ссылок
+  //MessageBox(0, PChar(ChangeMessageText), PChar('debug'), MB_ICONINFORMATION + MB_OK);
+  ChangeMessageText := ReplaceRegExpr('(?igr)@([\w\-]+)\srecommended\syour\s(post|comment)\s\#(\w+(\/\d+)?)(\:)?(\n(.+)\s\((\#\w+\/\d+)\))?(\n(https?\:\/\/[\w\.\%\-\/^\s\#^\s^\n\$]+))?', ChangeMessageText,
+                                      '@$0[img alt="Recommended"]skin://jabber_pics,838,#14[/img] #$2 (#$7)' + #13#10 + '$6' + #13#10 + '$9', True);
+
   //юзеры в тексте с микроаватарками
   ChangeMessageText := ReplaceRegExpr('(?igr)(@([\w\-@\.]+):?)', ChangeMessageText,
                                       '[img width=16 height=16 alt="@$2 avatar"]http://point.im/avatar/$2/80[/img]' +
@@ -164,22 +170,22 @@ begin
   //преобразовываем все посты в кликабле
   ChangeMessageText := ReplaceRegExpr('(?igr)((\s|Comment |Post |Private post |Комментарий |Пост |Приватный пост )#([\d\w\/]+) ?(is added.\r\n|is sent.\r\n|отправлен.\r\n|добавлен.\r\n|)?(http\:\/\/point.im\/([\d\w#]+))?)', ChangeMessageText,
                                       WideFormat('$2[url="plugin:%d"]#$3[/url][url="http://point.im/$3"][img]skin://graph,228[/img][/url] $4', [MyHandle]), True);
-  //фиксим урлы на комменты, ибо там не / а #
-  ChangeMessageText := ReplaceRegExpr('(?igr)\[url=\"http\:\/\/point.im\/([\d\w#]+)/(\d+)', ChangeMessageText,
-                                      '[url="http://point.im/$1#$2', True);
 
   //преобразуем все теги в тексте
   ChangeMessageText := ReplaceRegExpr('(?igr)\*([^\*\s]+)', ChangeMessageText, '[url="http://point.im?tag=$1"]$0[img]skin://graph,228[/img][/url]', True);
 
   // Replacing images
-  ChangeMessageText := ReplaceRegExpr('(?igr)(https?\:\/\/[\w\.-\/^\s]+?\.(jpg|png|gif))', ChangeMessageText, '[url=$0][img]$0[/img][/url]', True);
+  ChangeMessageText := ReplaceRegExpr('(?igr)(https?\:\/\/[\w\.\%\-\/^\s\@\&]+?\.(jpg|jpeg|png|gif))', ChangeMessageText, #13#10 + '[url=$0][img]$0[/img][/url]' + #13#10, True);
 
   // Markdown links
-  ChangeMessageText := ReplaceRegExpr('(?igr)\[([^\]\[]*?)\]\((\w+?\:(\/\/)?[\w\.\-\/^\s]+?)(\s\"(.*?)\")?\)', ChangeMessageText, '[url=$2]$1[/url]', True);
+  ChangeMessageText := ReplaceRegExpr('(?igr)\[([^\]]+)\]\((\w+?\:(\/\/)?[\w\.\%\-\/^\s\#\@\&]+)(\s\"(.*?)\")?\)?', ChangeMessageText, '[url=$1]$0[/url]', True); // $2 $1 ?
 
-  //строку Recommended by трансформируем в картиночку
+  //строку "Recommended by" трансформируем картинку
   ChangeMessageText := Tnt_WideStringReplace(ChangeMessageText, 'Recommended by', '[img alt="Recommended by"]skin://jabber_pics,838,#14[/img]', [rfReplaceAll]);
 
+  //фиксим урлы на комменты, ибо там не / а #
+  ChangeMessageText := ReplaceRegExpr('(?igr)\[url=\"http\:\/\/point.im\/([\d\w#]+)/(\d+)', ChangeMessageText,
+                                      '[url="http://point.im/$1#$2', True);
   //теперь лишние переводы строк
   ChangeMessageText := Tnt_WideStringReplace(ChangeMessageText, #13#10#13#10, #13#10, [rfReplaceAll]);
 
