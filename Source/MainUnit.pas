@@ -7,7 +7,7 @@ uses
 
 const
   PLUGIN_VER_MAJOR = 1;
-  PLUGIN_VER_MINOR = 4;
+  PLUGIN_VER_MINOR = 5;
   PLUGIN_NAME      : WideString = 'Point.im support';
   PLUGIN_AUTHOR    : WideString = '@hohoho';
   PLUGIN_DESC      : WideString = 'Ya dawg, i heard you like point.im...';
@@ -178,7 +178,7 @@ begin
   ChangeMessageText := ReplaceRegExpr('(?igr)(https?\:\/\/[\w\.\%\-\/^\s\@\&\=]+?\.(jpg|jpeg|png|gif))', ChangeMessageText, #13#10 + '[url=$0][img]$0[/img][/url]' + #13#10, True);
 
   // Markdown links
-  ChangeMessageText := ReplaceRegExpr('(?igr)\[([^\]]+)\]\((\w+?\:(\/\/)?[\w\.\%\-\/^\s\#\@\&\?\=]+)(\s\"(.*?)\")?\)?', ChangeMessageText, '[url=$2]$1[/url]', True);
+  ChangeMessageText := ReplaceRegExpr('(?igr)\[([^\]]+)\]\((\w+?\:(\/\/)?[\w\.\%\-\/^\s\#\@\&\?\=\:]+)(\s\"(.*?)\")?\)?', ChangeMessageText, '[url=$2]$1[/url]', True);
 
   //строку "Recommended by" трансформируем картинку
   ChangeMessageText := Tnt_WideStringReplace(ChangeMessageText, 'Recommended by', '[img alt="Recommended by"]skin://jabber_pics,838,#14[/img]', [rfReplaceAll]);
