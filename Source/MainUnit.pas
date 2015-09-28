@@ -7,7 +7,7 @@ uses
 
 const
   PLUGIN_VER_MAJOR = 1;
-  PLUGIN_VER_MINOR = 3;
+  PLUGIN_VER_MINOR = 4;
   PLUGIN_NAME      : WideString = 'Point.im support';
   PLUGIN_AUTHOR    : WideString = '@hohoho';
   PLUGIN_DESC      : WideString = 'Ya dawg, i heard you like point.im...';
@@ -162,10 +162,10 @@ begin
                                       '[url="http://$2.point.im"]@$2[img]skin://graph,228[/img][/url]', True);
 
   //преобразовываем все посты в кликабле
-  ChangeMessageText := ReplaceRegExpr('(?igr)((\s|Comment |Post |Private post |Комментарий |Пост |Приватный пост )#([\d\w\/]+) ?(is added.\r\n|is sent.\r\n|отправлен.\r\n|добавлен.\r\n|)?(http\:\/\/point.im\/([\d\w#]+))?)', ChangeMessageText,
+  ChangeMessageText := ReplaceRegExpr('(?igr)((\s|Comment |Post |Private post |Комментарий |Пост |Приватный пост )#([\d\w\/]+) ?(is added.\r\n|is sent.\r\n|отправлен.\r\n|добавлен.\r\n|)?(https?\:\/\/point.im\/([\d\w#]+))?)', ChangeMessageText,
                                       WideFormat('$2[url="plugin:%d"]#$3[/url][url="http://point.im/$3"][img]skin://graph,228[/img][/url] $4', [MyHandle]), True);
   //фиксим урлы на комменты, ибо там не / а #
-  ChangeMessageText := ReplaceRegExpr('(?igr)\[url=\"http\:\/\/point.im\/([\d\w#]+)/(\d+)', ChangeMessageText,
+  ChangeMessageText := ReplaceRegExpr('(?igr)\[url=\"https?\:\/\/point.im\/([\d\w#]+)/(\d+)', ChangeMessageText,
                                       '[url="http://point.im/$1#$2', True);
 
   //преобразуем все теги в тексте
