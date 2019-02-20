@@ -78,7 +78,7 @@ const
   PostTemplate = '[table border=0 cellspacing=0 cellpadding=0]' +
                    '[tr]' +
                      '[td border=0 padding=0 width=34 padding-left=3]' +
-                       '[img alt="@%0:s avatar" width=32 height=32]http://point.im/avatar/%0:s/80[/img]' +
+                       '[img alt="@%0:s avatar" width=32 height=32]https://point.im/avatar/%0:s/80[/img]' +
                      '[/td]' +
                      '[td border=0 padding=0 padding-right=5 padding-left=5]' +
                        '[table border=0 cellspacing=0 padding-left=5]' +
@@ -140,9 +140,9 @@ begin
       if Exec(firstLine) then
       repeat
         if user <> '' then
-          tags := tags + WideFormat('[url="http://' + user + '.point.im?tag=%s"]%s[img]skin://graph,228[/img][/url]', [Match[1], Match[0]])
+          tags := tags + WideFormat('[url="https://' + user + '.point.im?tag=%s"]%s[img]skin://graph,228[/img][/url]', [Match[1], Match[0]])
         else
-          tags := tags + WideFormat('[url="http://point.im?tag=%s"]%s[img]skin://graph,228[/img][/url]', [Match[1], Match[0]]);
+          tags := tags + WideFormat('[url="https://point.im?tag=%s"]%s[img]skin://graph,228[/img][/url]', [Match[1], Match[0]]);
       until not ExecNext;
     finally
       Free;
@@ -165,15 +165,15 @@ begin
 
   //юзеры в тексте с микроаватарками
   ChangeMessageText := ReplaceRegExpr('(?igr)(@([\w\-@\.]+):?)', ChangeMessageText,
-                                      '[img width=16 height=16 alt="@$2 avatar"]http://point.im/avatar/$2/80[/img]' +
-                                      '[url="http://$2.point.im"]@$2[img]skin://graph,228[/img][/url]', True);
+                                      '[img width=16 height=16 alt="@$2 avatar"]https://point.im/avatar/$2/80[/img]' +
+                                      '[url="https://$2.point.im"]@$2[img]skin://graph,228[/img][/url]', True);
 
   //преобразовываем все посты в кликабле
   ChangeMessageText := ReplaceRegExpr('(?igr)((\s|Comment |Post |Private post |Комментарий |Пост |Приватный пост )#([\d\w\/]+) ?(is added.\r\n|is sent.\r\n|отправлен.\r\n|добавлен.\r\n|)?(https?\:\/\/point.im\/([\d\w#]+))?)', ChangeMessageText,
-                                      WideFormat('$2[url="plugin:%d"]#$3[/url][url="http://point.im/$3"][img]skin://graph,228[/img][/url] $4', [MyHandle]), True);
+                                      WideFormat('$2[url="plugin:%d"]#$3[/url][url="https://point.im/$3"][img]skin://graph,228[/img][/url] $4', [MyHandle]), True);
 
   //преобразуем все теги в тексте
-  ChangeMessageText := ReplaceRegExpr('(?igr)\*([^\*\s]+)', ChangeMessageText, '[url="http://point.im?tag=$1"]$0[img]skin://graph,228[/img][/url]', True);
+  ChangeMessageText := ReplaceRegExpr('(?igr)\*([^\*\s]+)', ChangeMessageText, '[url="https://point.im?tag=$1"]$0[img]skin://graph,228[/img][/url]', True);
 
   // Replacing images
   ChangeMessageText := ReplaceRegExpr('(?igr)(https?\:\/\/[\w\.\%\-\/^\s\@\&\=]+?\.(jpg|jpeg|png|gif))', ChangeMessageText, #13#10 + '[url=$0][img]$0[/img][/url]' + #13#10, True);
@@ -186,7 +186,7 @@ begin
 
   //фиксим урлы на комменты, ибо там не / а #
   ChangeMessageText := ReplaceRegExpr('(?igr)\[url=\"https?\:\/\/point.im\/([\d\w#]+)/(\d+)', ChangeMessageText,
-                                      '[url="http://point.im/$1#$2', True);
+                                      '[url="https://point.im/$1#$2', True);
   //теперь лишние переводы строк
   ChangeMessageText := Tnt_WideStringReplace(ChangeMessageText, #13#10#13#10, #13#10, [rfReplaceAll]);
 
