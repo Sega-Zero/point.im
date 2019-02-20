@@ -1,6 +1,7 @@
 unit MainUnit;
 
-interface
+
+interface
 
 uses
   u_plugin_info, u_plugin_msg, u_common, u_BasePlugin, Classes, Windows;
@@ -168,7 +169,7 @@ begin
                                       '[url="http://$2.point.im"]@$2[img]skin://graph,228[/img][/url]', True);
 
   //преобразовываем все посты в кликабле
-  ChangeMessageText := ReplaceRegExpr('(?igr)((\s|Comment |Post |Private post |Комментарий |Пост |Приватный пост )#([\d\w\/]+) ?(is added.\r\n|is sent.\r\n|отправлен.\r\n|добавлен.\r\n|)?(http\:\/\/point.im\/([\d\w#]+))?)', ChangeMessageText,
+  ChangeMessageText := ReplaceRegExpr('(?igr)((\s|Comment |Post |Private post |Комментарий |Пост |Приватный пост )#([\d\w\/]+) ?(is added.\r\n|is sent.\r\n|отправлен.\r\n|добавлен.\r\n|)?(https?\:\/\/point.im\/([\d\w#]+))?)', ChangeMessageText,
                                       WideFormat('$2[url="plugin:%d"]#$3[/url][url="http://point.im/$3"][img]skin://graph,228[/img][/url] $4', [MyHandle]), True);
 
   //преобразуем все теги в тексте
@@ -184,7 +185,7 @@ begin
   ChangeMessageText := Tnt_WideStringReplace(ChangeMessageText, 'Recommended by', '[img alt="Recommended by"]skin://jabber_pics,838,#14[/img]', [rfReplaceAll]);
 
   //фиксим урлы на комменты, ибо там не / а #
-  ChangeMessageText := ReplaceRegExpr('(?igr)\[url=\"http\:\/\/point.im\/([\d\w#]+)/(\d+)', ChangeMessageText,
+  ChangeMessageText := ReplaceRegExpr('(?igr)\[url=\"https?\:\/\/point.im\/([\d\w#]+)/(\d+)', ChangeMessageText,
                                       '[url="http://point.im/$1#$2', True);
   //теперь лишние переводы строк
   ChangeMessageText := Tnt_WideStringReplace(ChangeMessageText, #13#10#13#10, #13#10, [rfReplaceAll]);
